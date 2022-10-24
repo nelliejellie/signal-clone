@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Button } from 
 import React, {useState} from 'react'
 import tw from 'tailwind-react-native-classnames';
 import { auth } from '../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
 
 const RegisterScreen = () => {
 
@@ -13,18 +13,14 @@ const RegisterScreen = () => {
 
   const Register = async () =>{
     try{
-        user = await createUserWithEmailAndPassword(
-            auth,
-            Email,
-            Password
-        )
-        user.updateProfile({
-            displayName: fullName,
-            photoUrl: imgUrl.length > 0 ? imgUrl : "https://thumbs.dreamstime.com/b/default-photo-placeholder-half-length-portrait-photo-avatar-gray-color-default-photo-placeholder-116847389.jpg"
-        })
-        console.log(user)
+        const {user} = await createUserWithEmailAndPassword(auth,Email,Password)
+        console.log(`User ${user.uid} created`)
+        await updateProfile(user, {
+          displayName: fullName,
+          photoUrl: imgUrl || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfsTQFb0kp8I5e3JYPbVszsdPRsHBp3MM0snd7GltdQQ&s"
+        });
     }catch(error){
-        console.log(error)
+          console.log(error)
     }
   }
   return (

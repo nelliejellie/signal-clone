@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar'
 import tw from 'tailwind-react-native-classnames'
 import { useNavigation } from '@react-navigation/native'
 import { auth } from '../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth'
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("")
@@ -15,13 +16,11 @@ const LoginScreen = () => {
         if(authUser){
             navigation.replace("Home")
         }
-        else{
-            alert("invalid details")
-        }
     })
   })
-  const signIn = () => {
-
+  const signIn = async() => {
+    const {user} = await signInWithEmailAndPassword(auth, email, password)
+    console.log(user)
   }
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
