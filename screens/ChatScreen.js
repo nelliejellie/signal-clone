@@ -28,7 +28,7 @@ const ChatScreen = ({route}) => {
   const sendMessage = async () =>{
     Keyboard.dismiss()
 
-    await addDoc(doc(db, "chats", route.params.chatName),{
+    await addDoc(collection(db, `chats/${route.params.chatName}/messages`),{
         timestamp: Date.now(),
         message: input,
         displayName: auth.currentUser.displayName,
@@ -54,6 +54,7 @@ const ChatScreen = ({route}) => {
                 <Input 
                     placeholder='send chat'
                     onChangeText={(text)=> setInput(text)}
+                    onSubmitEditing={sendMessage}
                     value={input}
                     rightIcon={
                         <Icon name='send' type='ionicons' color='blue' onPress={sendMessage}/>
