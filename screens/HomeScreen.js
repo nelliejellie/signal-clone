@@ -25,7 +25,6 @@ const HomeScreen = () => {
     const fetchChat = async () => {
       const chatsCollection = collection(db, 'chats');
       const chatSnapshot = await getDocs(chatsCollection);
-      console.log(chatSnapshot.docs.forEach(doc => console.log(doc.id)))
       const chatList = chatSnapshot.docs.map(doc => doc.data());
       console.log(chatList)
       setChat(chatList)
