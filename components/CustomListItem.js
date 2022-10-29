@@ -3,9 +3,9 @@ import { ListItem, Avatar } from 'react-native-elements'
 import React from 'react'
 import tw from 'tailwind-react-native-classnames'
 
-const CustomListItem = () => {
+const CustomListItem = ({id,chatName, enterChat}) => {
   return (
-    <ListItem>
+    <ListItem key={id} bottomDivider onPress={() => enterChat(id, chatName)}>
         <Avatar
             rounded
             source={{
@@ -14,7 +14,7 @@ const CustomListItem = () => {
         />
         <ListItem.Content>
             <ListItem.Title style={tw`font-bold`}>
-                Simplex Chat
+                {chatName}
             </ListItem.Title>
             <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
                 this is the subtitle

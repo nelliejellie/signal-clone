@@ -1,22 +1,40 @@
 import { View, Text,SafeAreaView, ScrollView, Image, TouchableOpacity } from 'react-native'
-import React, {useLayoutEffect} from 'react'
+import React, {useLayoutEffect, useState, useEffect} from 'react'
 import CustomListItem from '../components/CustomListItem'
 import { useNavigation } from '@react-navigation/native'
 import { auth,db } from '../firebase'
 import { Avatar } from 'react-native-elements'
 import tw from 'tailwind-react-native-classnames'
 import { Icon } from 'react-native-elements'
+import { collection, getDocs } from 'firebase/firestore'
+
 
 const HomeScreen = () => {
+  const [chats, setChat] = useState([]);
+
   const navigation = useNavigation();
+
   const signOut = () =>{
     auth.signOut().then(()=>{
       navigation.replace("Login")
     })
   }
+
+  useEffect(()=>{
+    setChat([])
+    const fetchChat = async () => {
+      const chatsCollection = collection(db, 'chats');
+      const chatSnapshot = await getDocs(chatsCollection);
+      console.log(chatSnapshot.docs.forEach(doc => console.log(doc.id)))
+      const chatList = chatSnapshot.docs.map(doc => doc.data());
+      console.log(chatList)
+      setChat(chatList)
+    }
+    fetchChat()
+  }, [])
   useLayoutEffect(()=>{
     navigation.setOptions({
-        title:auth?.currentUser?.displayName,
+        title:"Signal ",
         headerStyle: {backgroundColor: "white"},
         headerTitleStyle: {color:"black"},
         headerTintColor:"black",
@@ -43,10 +61,24 @@ const HomeScreen = () => {
         )
     })
   },[navigation])
+
+  const enterChat = (id, chatName) =>{
+    navigation.navigate('ChatScreen',{
+      id: id,
+      chatName: chatName
+    })
+  }
+   
   return (
     <SafeAreaView>
       <ScrollView>
-        <CustomListItem/>
+        {
+          chats.map((val)=>(
+            <CustomListItem key={val.id} id={val.id} chatName={val.chatName}
+              enterChat={enterChat}
+            />
+          ))
+        }
       </ScrollView>
     </SafeAreaView>
   )

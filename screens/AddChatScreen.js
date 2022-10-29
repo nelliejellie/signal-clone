@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, {useLayoutEffect, useState} from 'react'
 import { Button, Input, Icon } from 'react-native-elements'
-import { useNavigation } from '@react-navigation/native'
+import { useLinkBuilder, useNavigation } from '@react-navigation/native'
 import { db } from '../firebase'
 import { collection, getDocs, addDoc, setDoc, doc } from 'firebase/firestore'
-import { Firestore } from 'firebase/firestore'
+import { Firestore } from 'firebase/firestore';
+import tw from 'tailwind-react-native-classnames'
+import uuid from 'react-native-uuid';
 
 
 const AddChatScreen = () => {
@@ -21,13 +23,9 @@ const AddChatScreen = () => {
 
   const createChat = async () =>{
 
-    // const users = collection(db, 'users');
-    // const citySnapshot = await getDocs(users);
-    // const cityList = citySnapshot.docs.map(doc => doc.data());
-    // console.log(cityList)
-
     await setDoc(doc(db, "chats", input),{
-      chatName: "user1"
+      chatName: input,
+      id: uuid.v4()
     }).then(()=>{
       navigation.goBack()
     }).catch(err => console.log(err))
@@ -35,7 +33,7 @@ const AddChatScreen = () => {
   }
 
   return (
-    <View>
+    <View style={tw`p-2`}>
       <Input
         value={input}
         onChangeText={(text)=>setInput(text)}
