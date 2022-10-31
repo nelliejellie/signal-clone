@@ -31,6 +31,7 @@ const HomeScreen = () => {
     }
     fetchChat()
   }, [])
+  
   useLayoutEffect(()=>{
     navigation.setOptions({
         title:"Signal ",

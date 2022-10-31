@@ -1,15 +1,29 @@
 import { StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platform, Keyboard } from 'react-native'
-import React, {useLayoutEffect, useState} from 'react'
+import React, {useLayoutEffect, useState, useEffect} from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { Avatar, Input, Icon } from 'react-native-elements'
 import tw from 'tailwind-react-native-classnames'
 import { auth, db } from '../firebase'
-import { collection, getDocs, doc, FieldValue, setDoc, addDoc } from 'firebase/firestore'
+import { collection, getDocs, doc, FieldValue, setDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore'
 
 
 const ChatScreen = ({route}) => {
   const navigation = useNavigation();
   const [input, setInput] = useState("")
+  const [senderMessage, setSenderMessage] = useState("")
+  const [recieverMessage, setRecieverMessage] = useState("")
+  const [display, setDisplay] = useState("hidden")
+
+
+  const fetchMessage = async () => {
+    const chatsCollection = collection(db, `chats/${route.params.chatName}/messages`)
+    const chatSnapshot = await getDocs(chatsCollection, orderBy('timestamp'));
+    const chatList = chatSnapshot.docs.map(doc => doc.data());
+    console.log(chatList)
+    setSenderMessage(chatList[0].message)
+    setDisplay('block')
+  }
+
 
   useLayoutEffect(() =>{
     navigation.setOptions({
@@ -27,17 +41,16 @@ const ChatScreen = ({route}) => {
 
   const sendMessage = async () =>{
     Keyboard.dismiss()
-
+    
     await addDoc(collection(db, `chats/${route.params.chatName}/messages`),{
-        timestamp: Date.now(),
+        timestamp: serverTimestamp(),
         message: input,
         displayName: auth.currentUser.displayName,
         email: auth.currentUser.email,
       }).then(()=>{
         setInput('')
+        fetchMessage()
       }).catch(err => console.log(err))
-
-
     
   }
   return (
@@ -48,7 +61,16 @@ const ChatScreen = ({route}) => {
       >
         <View style={tw`flex h-full justify-between`}>
             <ScrollView>
-                <Text>hey</Text>
+                {
+                  auth.currentUser.email === auth.currentUser.email ?
+                    <View style={tw`bg-blue-200 ml-auto mr-2 mt-2 rounded-lg text-black p-4 flex flex-row justify-end ${display}`}>
+                      <Text>{senderMessage}</Text>
+                    </View>
+                    :
+                    <View style={tw`bg-slate-100 text-black p-4 flex flex-row justify-start`}>
+                      <Text>{recieverMessage.messagec}</Text>
+                    </View>
+                }
             </ScrollView>
             <View style={tw`flex flex-row m-auto`}>
                 <Input 
