@@ -22,6 +22,7 @@ const HomeScreen = () => {
 
   useEffect(()=>{
     setChat([])
+    console.log("back to homescreen")
     const fetchChat = async () => {
       const chatsCollection = collection(db, 'chats');
       const chatSnapshot = await getDocs(chatsCollection);
@@ -30,8 +31,8 @@ const HomeScreen = () => {
       setChat(chatList)
     }
     fetchChat()
-  }, [])
-  
+  }, [navigation])
+
   useLayoutEffect(()=>{
     navigation.setOptions({
         title:"Signal ",
